@@ -36,6 +36,7 @@ export type PropType = {
     dragAnimatedValue: any
   ) => any,
   useNativeAnimations: boolean,
+  isRTL: boolean,
   animationOptions?: Object,
   containerStyle?: Object,
   childrenContainerStyle?: Object,
@@ -54,6 +55,7 @@ export default class Swipeable extends Component<PropType, StateType> {
     friction: 1,
     overshootFriction: 1,
     useNativeAnimations: true,
+    isRTL: I18nManager.isRTL,
   };
   _onGestureEvent: ?Animated.Event;
   _transX: ?Animated.Interpolation;
@@ -277,12 +279,18 @@ export default class Swipeable extends Component<PropType, StateType> {
 
   render() {
     const { rowState } = this.state;
-    const { children, renderLeftActions, renderRightActions } = this.props;
+    const {
+      children,
+      renderLeftActions,
+      renderRightActions,
+      isRTL,
+    } = this.props;
 
     const left = renderLeftActions && (
       <Animated.View
         style={[
           styles.leftActions,
+          { flexDirection: isRTL ? 'row-reverse' : 'row' },
           { transform: [{ translateX: this._leftActionTranslate }] },
         ]}>
         {renderLeftActions(this._showLeftAction, this._transX)}
@@ -298,6 +306,7 @@ export default class Swipeable extends Component<PropType, StateType> {
       <Animated.View
         style={[
           styles.rightActions,
+          { flexDirection: isRTL ? 'row' : 'row-reverse' },
           { transform: [{ translateX: this._rightActionTranslate }] },
         ]}>
         {renderRightActions(this._showRightAction, this._transX)}
@@ -346,10 +355,8 @@ const styles = StyleSheet.create({
   },
   leftActions: {
     ...StyleSheet.absoluteFillObject,
-    flexDirection: I18nManager.isRTL? 'row-reverse': 'row',
   },
   rightActions: {
     ...StyleSheet.absoluteFillObject,
-    flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse',
   },
 });
